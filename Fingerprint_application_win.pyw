@@ -290,14 +290,22 @@ class MyGUI():
         id = str(self.id_entry.get())
         finger = self.finger_cb.get()
         if not os.path.exists(os.path.join(DATA_FILEPATH,id)): os.makedirs(os.path.join(DATA_FILEPATH,id))
-
+        '''
+        go into id folder and iterate through each file name
+        if the finger name matches:
+            count++
+        
+        do this the same time we get id, name, finger etc etc
+        '''
         ## SAVES RAW IMAGE ##
         cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger+'_Raw'+FILE_EXTENSION),inputIMG)
 
         width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-        target = inputIMG[round(height * (25/152)) : round(height * (1845/3496)) , round(width * (1465/4645)) : round(width * (3065/4656))] # 1465:3065,575:1845
+        # Crops to fingerprint area
+        target = inputIMG[round(height * (25/152)) : round(height * (1845/3496)) , 
+                          round(width * (1465/4645)) : round(width * (3065/4656))] # 1465:3065,575:1845
         
         # Remove Background
         rembg_s = time.perf_counter()
@@ -352,8 +360,11 @@ class MyGUI():
         nfiq_s = time.perf_counter()
         resized = cv2.resize(inverted, (640, 640))
         
+
+
+
         cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION),resized)
-        # cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger + '_NFIQ' +FILE_EXTENSION),resized)
+        cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger + '_NFIQ' +FILE_EXTENSION),resized)
         img = Image.open(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION))
         if img.mode != 'RGB':
             img = img.convert('RGB')
