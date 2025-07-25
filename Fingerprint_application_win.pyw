@@ -36,7 +36,7 @@ class MyGUI():
         self.root = tki.Tk()
 
         # Set window size and title
-        self.root.geometry('1350x750') 
+        self.root.geometry('1350x770') 
         self.root.title(string='Fingerprint Capture')
 
         # Fonts
@@ -61,6 +61,7 @@ class MyGUI():
             self.current_camera = 0
 
         self.preview_running = True # Determines if preview is playing or not
+        self.duplicate = False
 
         # Set Camera settings
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
@@ -119,6 +120,11 @@ class MyGUI():
         self.camera_options_label.grid(row=3,column=0,sticky='w')
         self.camera_options_cb.grid(row=3,column=1)
         self.connect_button.grid(row=3,column=2)
+
+        self.duplicate_var = tki.BooleanVar()
+        self.duplicate_checkbox = tki.Checkbutton(self.top_frame, text="Allow duplicate finger pictures",variable=self.duplicate_var,onvalue=1,offvalue=0)
+        self.duplicate_checkbox.grid(row=4,column=0)
+
 
         ## Middle Frame ##
         self.middle_frame = tki.Frame(self.root)
@@ -187,6 +193,8 @@ class MyGUI():
 
     def take_photo(self):
         self.capture_button.configure(command=self.do_nothing)
+
+
         # Pause Preview
         photo_s = time.perf_counter()
         self.preview_running = False
@@ -205,13 +213,29 @@ class MyGUI():
         # Turn preview back on
         self.preview_running = True
         self.open_camera()
-        
-        # Preprocess
-        frame = self.process(frame)
-        
+
+
         name = self.name_entry.get()
         id = str(self.id_entry.get())
         finger = self.finger_cb.get()
+
+        os.makedirs(os.path.join(DATA_FILEPATH,id), exist_ok=True)
+        os.makedirs(os.path.join(DATA_FILEPATH,id,'Real'),exist_ok=True)
+        os.makedirs(os.path.join(DATA_FILEPATH,id,'NFIQ'),exist_ok=True)
+        os.makedirs(os.path.join(DATA_FILEPATH,id,'Raw'),exist_ok=True)
+
+        if self.duplicate_var.get():
+            self.duplicate_number = 0
+            for files in os.listdir(os.path.join(DATA_FILEPATH, id,'Real')):
+
+                if os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger) in os.path.join(DATA_FILEPATH, id,'Real', files):
+                    self.duplicate_number += 1
+                    self.duplicate = True
+            self.duplicate_number = str(self.duplicate_number)      
+
+        # Preprocess
+        frame = self.process(frame)
+        
 
         # Show Image on Screen
         image = Image.fromarray(frame)
@@ -224,7 +248,11 @@ class MyGUI():
         # Get and show NFIQ2 Score
         if os.path.exists("C:\\Program Files\\NFIQ 2\\bin\\nfiq2.exe"):
             nfiq2_path = "C:\\Program Files\\NFIQ 2\\bin\\nfiq2.exe"
-            image_path = os.path.join(DATA_FILEPATH, id, id + '_' + finger + FILE_EXTENSION)
+            if not self.duplicate:
+                image_path = os.path.join(DATA_FILEPATH, id,'Real', id + '_' + finger + FILE_EXTENSION)
+            else:
+                image_path = os.path.join(DATA_FILEPATH, id,'Real', id + '_' + finger+'_'+self.duplicate_number + FILE_EXTENSION)
+
             result = subprocess.run(
                 [nfiq2_path, image_path],
                 input='y',
@@ -236,12 +264,18 @@ class MyGUI():
                 nfiq2_score = result.stdout.strip()
                 self.root.after(0, lambda: self.metric_label.configure(text=f'NFIQ2 SCORE: {nfiq2_score[-2:]}'))
             else:
+                nfiq2_score = 'na'
                 self.root.after(0,lambda: self.metric_label.configure(text='NFIQ2 SCORE: ERROR'))
         else:
+            nfiq2_score = 'na'
             self.root.after(0,lambda: self.metric_label.configure(text='NFIQ2 SCORE: NOT FOUND'))
         
+
         # Save processed image
-        cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION),frame)
+        if not self.duplicate:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+FILE_EXTENSION),frame)
+        else:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+'_'+self.duplicate_number+FILE_EXTENSION),frame)
 
         # Log Data to CSV
         if os.path.exists(LOG_FILEPATH):
@@ -251,9 +285,12 @@ class MyGUI():
 
         with open(LOG_FILEPATH, 'a') as csvfile:
             if not logfile_exists:
-                csvfile.write(f'date,name,id,finger')
-            csvfile.write(f'\n{datetime.datetime.now()},{name},{id},{finger}')
+                csvfile.write(f'date,name,id,finger,nfiq')
+
+            
+            csvfile.write(f'\n{datetime.datetime.now()},{name},{id},{finger},{nfiq2_score[-2:].strip()}')
         
+        self.duplicate = False
         self.root.after(0,self.capture_button.configure(command=lambda: threading.Thread(target=self.take_photo).start()))
 
     # Gets the next free ID
@@ -289,16 +326,12 @@ class MyGUI():
         total_s = time.perf_counter()
         id = str(self.id_entry.get())
         finger = self.finger_cb.get()
-        if not os.path.exists(os.path.join(DATA_FILEPATH,id)): os.makedirs(os.path.join(DATA_FILEPATH,id))
-        '''
-        go into id folder and iterate through each file name
-        if the finger name matches:
-            count++
-        
-        do this the same time we get id, name, finger etc etc
-        '''
+
         ## SAVES RAW IMAGE ##
-        cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger+'_Raw'+FILE_EXTENSION),inputIMG)
+        if not self.duplicate:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Raw',id+'_'+finger+'_Raw'+FILE_EXTENSION),inputIMG)
+        else:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Raw',id+'_'+finger+'_Raw'+'_'+self.duplicate_number+FILE_EXTENSION),inputIMG)
 
         width = self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)
         height = self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
@@ -345,7 +378,7 @@ class MyGUI():
         
         # Threshold to remove grey pixels in-between ridges
         thresh_s = time.perf_counter()
-        _, threshold = cv2.threshold(cl1, thresh=100, maxval=255, type=cv2.THRESH_TOZERO)
+        _, threshold = cv2.threshold(cl1, thresh=125, maxval=255, type=cv2.THRESH_TOZERO) # 100
         thresh_e = time.perf_counter()
         print(f'Threshold: {thresh_e - thresh_s}')
 
@@ -361,14 +394,28 @@ class MyGUI():
         resized = cv2.resize(inverted, (640, 640))
         
 
+        if not self.duplicate:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+FILE_EXTENSION),resized)
+        else:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+'_'+self.duplicate_number+FILE_EXTENSION),resized)
 
+        if not self.duplicate:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'NFIQ',id+'_'+finger + '_NFIQ' +FILE_EXTENSION),resized)
+        else:
+            cv2.imwrite(os.path.join(DATA_FILEPATH,id,'NFIQ',id+'_'+finger + '_NFIQ' +'_'+self.duplicate_number+FILE_EXTENSION),resized)
 
-        cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION),resized)
-        cv2.imwrite(os.path.join(DATA_FILEPATH,id,id+'_'+finger + '_NFIQ' +FILE_EXTENSION),resized)
-        img = Image.open(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION))
+        if not self.duplicate:
+            img = Image.open(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+FILE_EXTENSION))
+        else:
+            img = Image.open(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+'_'+self.duplicate_number+FILE_EXTENSION))
+        
         if img.mode != 'RGB':
             img = img.convert('RGB')
-        img.save(os.path.join(DATA_FILEPATH,id,id+'_'+finger+FILE_EXTENSION), dpi=(500, 500))
+
+        if not self.duplicate:
+            img.save(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+FILE_EXTENSION), dpi=(500, 500))
+        else:
+            img.save(os.path.join(DATA_FILEPATH,id,'Real',id+'_'+finger+'_'+self.duplicate_number+FILE_EXTENSION), dpi=(500, 500))
         nfiq_e = time.perf_counter()
         print(f'nfiq: {nfiq_e - nfiq_s}')
         
@@ -451,6 +498,7 @@ if __name__ == '__main__':
     os.makedirs(DATA_FILEPATH, exist_ok=True)
 
     gui = MyGUI()
+
     
     
     

@@ -255,7 +255,7 @@ class MyGUI():
         # Get and show NFIQ2 Score
         if os.path.exists("//usr//local//bin//nfiq2"):
             nfiq2_path = "//usr//local//bin//nfiq2"
-            image_path = os.path.join(DATA_FILEPATH, id, id + '_' + finger + FILE_EXTENSION)
+            image_path = os.path.join(DATA_FILEPATH, id,'Real', id + '_' + finger + FILE_EXTENSION)
             result = subprocess.run(
                 [nfiq2_path, image_path],
                 input='y',
