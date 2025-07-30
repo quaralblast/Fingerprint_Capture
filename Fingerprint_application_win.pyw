@@ -378,7 +378,7 @@ class MyGUI():
         
         # Threshold to remove grey pixels in-between ridges
         thresh_s = time.perf_counter()
-        _, threshold = cv2.threshold(cl1, thresh=125, maxval=255, type=cv2.THRESH_TOZERO) # 100
+        _, threshold = cv2.threshold(cl1, thresh=100, maxval=255, type=cv2.THRESH_TOZERO) # 100
         thresh_e = time.perf_counter()
         print(f'Threshold: {thresh_e - thresh_s}')
 
