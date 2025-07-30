@@ -22,3 +22,5 @@ The images are saved in Documents in a folder called 'FingerprintCapture'. Each 
 real, raw, and NFIQ. The raw folder contains the raw image taken by the scanner. The real folder contains the image after preprocessing (the one shown on the
 righthand side of the screen). The NFIQ folder contains the image that was submitted to NFIQ2 for quality assurance. Those images are set to 500ppi as this is  
 required by NFIQ. 
+
+The source code can be found in the 'Fingerprint_application_win.pyw' file.
