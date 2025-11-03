@@ -1,11 +1,11 @@
 # Fingerprint Capture 
 
-a GUI software built for simple fingerprint data collection. 
+ GUI software built for simple fingerprint data collection. 
 To download, go to releases and select Fingerprint_Capture_Setup.exe to download. This application is only supported for windows at the moment.
 
 
 
-How to use:
+## How to use:
 A camera must be connected for the app to open. If the app opens with the wrong camera, go to the camera dropdown, 
 select the appropriate camera and click connect.
 
@@ -25,4 +25,4 @@ real, raw, and NFIQ. The raw folder contains the raw image taken by the scanner.
 righthand side of the screen). The NFIQ folder contains the image that was submitted to NFIQ2 for quality assurance. Those images are set to 500ppi as this is  
 required by NFIQ. 
 
-The source code can be found in the 'Fingerprint_application_win.pyw' file.
+'The source code can be found in the 'Fingerprint_application_win.pyw' file.'
