@@ -1,4 +1,6 @@
-Fingerprint Capture - a GUI software built for simple fingerprint data collection. 
+# Fingerprint Capture 
+
+a GUI software built for simple fingerprint data collection. 
 To download, go to releases and select Fingerprint_Capture_Setup.exe to download. This application is only supported for windows at the moment.
 
 
