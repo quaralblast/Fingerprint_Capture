@@ -25,4 +25,4 @@ real, raw, and NFIQ. The raw folder contains the raw image taken by the scanner.
 righthand side of the screen). The NFIQ folder contains the image that was submitted to NFIQ2 for quality assurance. Those images are set to 500ppi as this is  
 required by NFIQ. 
 
-'The source code can be found in the 'Fingerprint_application_win.pyw' file.'
+The source code can be found in the 'Fingerprint_application_win.pyw' file.
