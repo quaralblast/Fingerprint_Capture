@@ -212,11 +212,15 @@ tes*
 # ignore anything starting with 'WIN'
 WIN*
 
+# ignore rembg
+.u2net
+
 # ignore unused .py files
 aspect_ratio.py
 crop_test.py
 FingerprintMain.py
 FingerprintMain copy.py
+FP_Preprocess.py
 FP_Preprocess_V1.py
 FP_Preprocess_V2.py
 non_zero_test.py
@@ -228,5 +232,10 @@ Fingerprint_application_linux (3).pyw
 Fingerprint_application_win_mid.pyw
 Fingerprint_application.pyw
 
-# ignore test fingerprint logs
+# ignore test fingerprint logs/data
 *.csv
+.Fingerprint_Data/
+
+# ignore not needed pngs
+not_zero_test.png
+raspireader_rawftir.png
