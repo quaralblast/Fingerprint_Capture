@@ -202,3 +202,31 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ignore jpgs
+*.jpg
+
+# ignore anything starting with 'tes'
+tes*
+
+# ignore anything starting with 'WIN'
+WIN*
+
+# ignore unused .py files
+aspect_ratio.py
+crop_test.py
+FingerprintMain.py
+FingerprintMain copy.py
+FP_Preprocess_V1.py
+FP_Preprocess_V2.py
+non_zero_test.py
+opencv_test.py
+SiameseHelper.py
+Fingerprint_application (old).pyw
+Fingerprint_application_linux (2).pyw
+Fingerprint_application_linux (3).pyw
+Fingerprint_application_win_mid.pyw
+Fingerprint_application.pyw
+
+# ignore test fingerprint logs
+*.csv
