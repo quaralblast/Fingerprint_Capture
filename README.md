@@ -1,7 +1,7 @@
 # Fingerprint Capture 
 
  GUI software built for simple fingerprint data collection. 
-To download, go to releases and select Fingerprint_Capture_Setup.exe to download. Sample Data can be found in the 'FingerprintCapture' folder. This application is only supported for windows at the moment.
+To download, go to releases and select Fingerprint_Capture_Setup.exe to download. Sample Data can be found in the 'Fingerprint_Data' folder. This application is only supported for windows at the moment.
 
 
 
