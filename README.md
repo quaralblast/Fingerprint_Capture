@@ -1,9 +1,13 @@
+<div align="center">
 # Fingerprint Capture
-<img width="1341" height="747" alt="im3" src="https://github.com/user-attachments/assets/0a0dcfa3-66c1-4fb0-9aa4-27803fb2f0aa" />
 
-
- GUI software built for simple fingerprint data collection. 
+GUI software built for simple fingerprint data collection. 
 To download, go to releases and select Fingerprint_Capture_Setup.exe to download. Sample Data can be found in the 'Fingerprint_Data' folder. This application is only supported for windows at the moment.
+
+</div>
+
+
+<img width="1341" height="747" alt="im3" src="https://github.com/user-attachments/assets/0a0dcfa3-66c1-4fb0-9aa4-27803fb2f0aa" />
 
 
 
